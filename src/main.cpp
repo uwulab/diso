@@ -109,5 +109,7 @@ int main(int argc, const char *argv[])
     spdlog::info("buffer_size: {} bytes", buffer_size);
     spdlog::info("decompress: {}", decompress_flag);
   }
+
+  aria2::libraryInit();
   return 0;
 }

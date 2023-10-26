@@ -20,7 +20,7 @@ file(RENAME ${LIBSSH2_PC_FILE_PATCHED} ${LIBSSH2_PC})
 
 pkg_check_modules(PKG_ARIA2 REQUIRED libaria2)
 pkg_check_modules(PKG_LIBXML2 REQUIRED libxml-2.0)
-pkg_check_modules(PKG_OpenSSL REQUIRED OpenSSL)
+pkg_check_modules(PKG_OpenSSL REQUIRED openssl)
 pkg_check_modules(PKG_LIBSSH2 REQUIRED libssh2)
 pkg_check_modules(PKG_LIBCARES REQUIRED libcares)
 pkg_check_modules(PKG_SQLITE3 REQUIRED sqlite3)

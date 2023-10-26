@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(diso C CXX)
 
 find_package(PkgConfig REQUIRED)
-set(ENV{PKG_CONFIG_LIBDIR} "${ARIA2_DEPS_ROOT}/usr/local/lib")
-set(ENV{PKG_CONFIG_PATH} "${ARIA2_DEPS_ROOT}/usr/local/lib/pkgconfig")
+set(PKG_CONFIG_LIBDIR "${ARIA2_DEPS_ROOT}/usr/local/lib")
 set(PKG_CONFIG_PATH "${ARIA2_DEPS_ROOT}/usr/local/lib/pkgconfig")
+set(ENV{PKG_CONFIG_LIBDIR} "${PKG_CONFIG_LIBDIR}")
+set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_PATH}")
 
 set(LIBSSH2_PC "${PKG_CONFIG_PATH}/libssh2.pc")
 file(STRINGS ${LIBSSH2_PC} LIBSSH2_PC_FILE)
@@ -75,6 +76,14 @@ target_compile_options(diso PUBLIC
     ${PKG_LIBCARES_CFLAGS_OTHER}
     ${PKG_SQLITE3_CFLAGS_OTHER}
 )
+
+file(COPY ${PKG_CONFIG_LIBDIR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+if(UNIX AND NOT APPLE)
+    set_target_properties(diso PROPERTIES INSTALL_RPATH "\$ORIGIN/lib:\$ORIGIN/lib64")
+elseif(UNIX AND APPLE)
+    set_target_properties(diso PROPERTIES INSTALL_RPATH "@loader_path/lib")
+endif()
 
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /wd4996 /wd4267 /wd4068")

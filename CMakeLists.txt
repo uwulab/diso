@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(diso C CXX)
 
 set (THREADS_PREFER_PTHREAD_FLAG ON)
-find_package (Threads REQUIRED)
+find_package(Threads REQUIRED)
+find_library(DLPATH NAMES libdl.so dl)
 
 find_package(PkgConfig REQUIRED)
 set(PKG_CONFIG_LIBDIR "${ARIA2_DEPS_ROOT}/usr/local/lib")
@@ -50,7 +51,7 @@ add_executable(diso
     "src/main.cpp"
 )
 target_include_directories(diso PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party")
-target_include_directories(diso PUBLIC 
+target_include_directories(diso PUBLIC
     ${PKG_ARIA2_INCLUDE_DIRS}
     ${PKG_LIBXML2_INCLUDE_DIRS}
     ${PKG_OpenSSL_INCLUDE_DIRS}

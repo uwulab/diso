@@ -57,6 +57,7 @@ target_include_directories(diso PUBLIC
     ${PKG_LIBSSH2_INCLUDE_DIRS}
     ${PKG_LIBCARES_INCLUDE_DIRS}
     ${PKG_SQLITE3_INCLUDE_DIRS}
+    ${PKG_ZLIB_INCLUDE_DIRS}
 )
 target_link_directories(diso PUBLIC
     ${PKG_ARIA2_LIBRARY_DIRS}
@@ -65,6 +66,7 @@ target_link_directories(diso PUBLIC
     ${PKG_LIBSSH2_LIBRARY_DIRS}
     ${PKG_LIBCARES_LIBRARY_DIRS}
     ${PKG_SQLITE3_LIBRARY_DIRS}
+    ${PKG_ZLIB_LIBRARY_DIRS}
 )
 target_link_libraries(diso
     ${PKG_ARIA2_LIBRARIES}
@@ -73,6 +75,7 @@ target_link_libraries(diso
     ${PKG_LIBSSH2_LIBRARIES}
     ${PKG_LIBCARES_LIBRARIES}
     ${PKG_SQLITE3_LIBRARIES}
+    ${PKG_ZLIB_LIBRARIES}
     Threads::Threads
 )
 target_compile_options(diso PUBLIC
@@ -82,6 +85,7 @@ target_compile_options(diso PUBLIC
     ${PKG_LIBSSH2_CFLAGS_OTHER}
     ${PKG_LIBCARES_CFLAGS_OTHER}
     ${PKG_SQLITE3_CFLAGS_OTHER}
+    ${PKG_ZLIB_CFLAGS_OTHER}
 )
 
 if(UNIX AND NOT APPLE)

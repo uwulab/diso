@@ -4,6 +4,7 @@ project(diso C CXX)
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_library(DLPATH NAMES libdl.so dl)
+find_library(RESOLV_PATH NAMES libresolv.so resolv)
 
 if(UNIX AND APPLE)
     set(ARIA2_TRIPLET "${CMAKE_HOST_SYSTEM_PROCESSOR}-apple-darwin")
@@ -19,7 +20,7 @@ endif()
 
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/usr/local/bin")
     if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/aria2-deps-${ARIA2_TRIPLET}.tar.gz")
-        file(DOWNLOAD "https://github.com/uwulab/aria2-deps/releases/download/v20231026/aria2-deps-${ARIA2_TRIPLET}.tar.gz" "${CMAKE_CURRENT_BINARY_DIR}/aria2-deps-${ARIA2_TRIPLET}.tar.gz" SHOW_PROGRESS)
+        file(DOWNLOAD "https://github.com/uwulab/aria2-deps/releases/download/v20231028/aria2-deps-${ARIA2_TRIPLET}.tar.gz" "${CMAKE_CURRENT_BINARY_DIR}/aria2-deps-${ARIA2_TRIPLET}.tar.gz" SHOW_PROGRESS)
     endif()
     file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_BINARY_DIR}/aria2-deps-${ARIA2_TRIPLET}.tar.gz" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
@@ -98,6 +99,8 @@ target_link_libraries(diso
     ${PKG_SQLITE3_LIBRARIES}
     ${PKG_ZLIB_LIBRARIES}
     Threads::Threads
+    ${DLPATH}
+    ${RESOLV_PATH}
 )
 target_compile_options(diso PUBLIC
     ${PKG_ARIA2_CFLAGS_OTHER}

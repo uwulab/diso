@@ -5,6 +5,9 @@ set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_library(DLPATH NAMES libdl.so dl)
 find_library(RESOLV_PATH NAMES libresolv.so resolv)
+if(UNIX AND APPLE)
+  find_package(Intl REQUIRED)
+endif()
 
 if(UNIX AND APPLE)
     set(ARIA2_TRIPLET "${CMAKE_HOST_SYSTEM_PROCESSOR}-apple-darwin")
@@ -29,8 +32,10 @@ set(ARIA2_DEPS_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
 find_package(PkgConfig REQUIRED)
 set(PKG_CONFIG_LIBDIR "${ARIA2_DEPS_ROOT}/usr/local/lib")
 set(PKG_CONFIG_PATH "${ARIA2_DEPS_ROOT}/usr/local/lib/pkgconfig")
-set(ENV{PKG_CONFIG_LIBDIR} "${PKG_CONFIG_LIBDIR}")
-set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_PATH}")
+set(PKG_CONFIG_LIBDIR_64 "${ARIA2_DEPS_ROOT}/usr/local/lib64")
+set(PKG_CONFIG_PATH_64 "${ARIA2_DEPS_ROOT}/usr/local/lib64/pkgconfig")
+set(ENV{PKG_CONFIG_LIBDIR} "${PKG_CONFIG_LIBDIR}:${PKG_CONFIG_LIBDIR_64}")
+set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_PATH}:${PKG_CONFIG_PATH_64}")
 
 set(LIBSSH2_PC "${PKG_CONFIG_PATH}/libssh2.pc")
 file(STRINGS ${LIBSSH2_PC} LIBSSH2_PC_FILE)
@@ -72,15 +77,6 @@ add_executable(diso
     "src/main.cpp"
 )
 target_include_directories(diso PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party")
-target_include_directories(diso PUBLIC
-    ${PKG_ARIA2_INCLUDE_DIRS}
-    ${PKG_LIBXML2_INCLUDE_DIRS}
-    ${PKG_OpenSSL_INCLUDE_DIRS}
-    ${PKG_LIBSSH2_INCLUDE_DIRS}
-    ${PKG_LIBCARES_INCLUDE_DIRS}
-    ${PKG_SQLITE3_INCLUDE_DIRS}
-    ${PKG_ZLIB_INCLUDE_DIRS}
-)
 target_link_directories(diso PUBLIC
     ${PKG_ARIA2_LIBRARY_DIRS}
     ${PKG_LIBXML2_LIBRARY_DIRS}
@@ -89,18 +85,6 @@ target_link_directories(diso PUBLIC
     ${PKG_LIBCARES_LIBRARY_DIRS}
     ${PKG_SQLITE3_LIBRARY_DIRS}
     ${PKG_ZLIB_LIBRARY_DIRS}
-)
-target_link_libraries(diso
-    ${PKG_ARIA2_LIBRARIES}
-    ${PKG_LIBXML2_LIBRARIES}
-    ${PKG_OpenSSL_LIBRARIES}
-    ${PKG_LIBSSH2_LIBRARIES}
-    ${PKG_LIBCARES_LIBRARIES}
-    ${PKG_SQLITE3_LIBRARIES}
-    ${PKG_ZLIB_LIBRARIES}
-    Threads::Threads
-    ${DLPATH}
-    ${RESOLV_PATH}
 )
 target_compile_options(diso PUBLIC
     ${PKG_ARIA2_CFLAGS_OTHER}
@@ -111,6 +95,54 @@ target_compile_options(diso PUBLIC
     ${PKG_SQLITE3_CFLAGS_OTHER}
     ${PKG_ZLIB_CFLAGS_OTHER}
 )
+if(UNIX AND APPLE)
+  find_package(Intl REQUIRED)
+  target_include_directories(diso PUBLIC
+    ${PKG_ARIA2_INCLUDE_DIRS}
+    ${PKG_LIBXML2_INCLUDE_DIRS}
+    ${PKG_OpenSSL_INCLUDE_DIRS}
+    ${PKG_LIBSSH2_INCLUDE_DIRS}
+    ${PKG_LIBCARES_INCLUDE_DIRS}
+    ${PKG_SQLITE3_INCLUDE_DIRS}
+    ${PKG_ZLIB_INCLUDE_DIRS}
+    ${Intl_INCLUDE_DIRS}
+  )
+  target_link_libraries(diso
+    ${PKG_ARIA2_LIBRARIES}
+    ${PKG_LIBXML2_LIBRARIES}
+    ${PKG_OpenSSL_LIBRARIES}
+    ${PKG_LIBSSH2_LIBRARIES}
+    ${PKG_LIBCARES_LIBRARIES}
+    ${PKG_SQLITE3_LIBRARIES}
+    ${PKG_ZLIB_LIBRARIES}
+    Threads::Threads
+    ${DLPATH}
+    ${RESOLV_PATH}
+    ${Intl_LIBRARIES}
+  )
+else()
+  target_include_directories(diso PUBLIC
+    ${PKG_ARIA2_INCLUDE_DIRS}
+    ${PKG_LIBXML2_INCLUDE_DIRS}
+    ${PKG_OpenSSL_INCLUDE_DIRS}
+    ${PKG_LIBSSH2_INCLUDE_DIRS}
+    ${PKG_LIBCARES_INCLUDE_DIRS}
+    ${PKG_SQLITE3_INCLUDE_DIRS}
+    ${PKG_ZLIB_INCLUDE_DIRS}
+  )
+  target_link_libraries(diso
+    ${PKG_ARIA2_LIBRARIES}
+    ${PKG_LIBXML2_LIBRARIES}
+    ${PKG_OpenSSL_LIBRARIES}
+    ${PKG_LIBSSH2_LIBRARIES}
+    ${PKG_LIBCARES_LIBRARIES}
+    ${PKG_SQLITE3_LIBRARIES}
+    ${PKG_ZLIB_LIBRARIES}
+    Threads::Threads
+    ${DLPATH}
+    ${RESOLV_PATH}
+  )
+endif()
 
 if(UNIX AND NOT APPLE)
     set_target_properties(diso PROPERTIES INSTALL_RPATH "\$ORIGIN/lib:\$ORIGIN/lib64")

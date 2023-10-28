@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j `nproc`
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          brew install gettext
+          mkdir build
+          cd build
+          cmake ..
+          make -j `sysctl -n hw.ncpu`

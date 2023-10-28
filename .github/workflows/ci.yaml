@@ -6,11 +6,21 @@ on:
   pull_request:
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # build c++
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j `nproc`
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: build
         run: |
           mkdir build
